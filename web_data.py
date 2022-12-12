@@ -35,12 +35,12 @@ def get_data_from_url(soup, cur, conn):
         #title
         title_chunk = caption.find('h3')
         title = title_chunk.find('a').text.replace("\n", "")
-        correct_title = re.sub(r'[^a-zA-Z0-9\s]+', '', title).title()
+        correct_title = re.sub(r'[^a-zA-Z0-9\s]+', '', title).title().replace("  ", " ")
         #genre
         genre_str = item.find('span', class_='genre').text.strip()
         genre_list = genre_str.split(",")
         genre = genre_list[0]
-        print(genre)
+        # print(genre)
         #rating
         rating = float(item.find('div', class_='inline-block ratings-imdb-rating').text.strip())
         #profit
