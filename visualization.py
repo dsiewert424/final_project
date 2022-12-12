@@ -85,7 +85,7 @@ def make_avg_times_mentionned_bar_graph(cur, conn):
     bar_graph_list = []
 
     fout = open("avg_articles_per_genre.csv", "w")
-    line = "Most Popular Genre, Average Number of NYT Articles\n"
+    line = "Genre, Number of Articles Mentioning Genre, Number of Movies of Genre, Average Number Calculated\n"
     fout.write(line)
     row = ""
 
@@ -97,6 +97,8 @@ def make_avg_times_mentionned_bar_graph(cur, conn):
         bar_graph_genres.append(genre)
         row = row + str(genre) + ','
         bar_graph_list.append(total[genre] / count[genre])
+        row = row + str(total[genre]) + ','
+        row = row + str(count[genre]) + ','
         row = row + str(total[genre] / count[genre])
         line = row + "\n"
         fout.write(line)
@@ -121,16 +123,28 @@ def make_avg_gross_profit_bar_graph(cur, conn):
     bar_graph_genres = []
     bar_graph_list = []
 
+    fout = open("avg_gross_profit_per_genre.csv", "w")
+    line = "Genre, Total Profit of Genre, Number of Movies of Genre, Average Number Calculated\n"
+    fout.write(line)
+    row = ""
+
     for item in list_to_count_averages:
         if (item[1] != 'None'):
             total[item[0]] = total.get(item[0], 0) + float(item[1])
             count[item[0]] = count.get(item[0], 0) + 1
         
-        
-
     for genre in total:
         bar_graph_genres.append(genre)
+        row = row + str(genre) + ','
         bar_graph_list.append(total[genre] / count[genre])
+        row = row + str(total[genre]) + ','
+        row = row + str(count[genre]) + ','
+        row = row + str(total[genre] / count[genre])
+        line = row + "\n"
+        fout.write(line)
+        row = ""
+        
+    fout.close()
 
     fig = go.FigureWidget(data=go.Bar(x=bar_graph_genres, y=bar_graph_list))
 
