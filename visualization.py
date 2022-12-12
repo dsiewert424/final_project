@@ -11,12 +11,23 @@ def make_rating_scatter_plot(cur, conn):
     x_axis = []
     y_axis = []
     movie_titles = []
+   
+    fout = open("NYT_movies_mentioned_and_ratings.csv", "w")
+    line = "Count of Articles Mentioned, Ratings, Movie Title\n"
+    fout.write(line)
+    row = ""
+
     for item in cur.fetchall():
         x_axis.append(item[0])
+        row = row + str(item[0]) + ','
         y_axis.append(item[1])
+        row = row + str(item[1]) + ','
         movie_titles.append(item[2])
-    # print(x_axis)
-
+        row = row + str(item[2])
+        line = row + "\n"
+        fout.write(line)
+        row = ""
+    fout.close()
 
     df = pd.DataFrame(dict(Rating=y_axis, Times_Mentionned=x_axis, Movie_Title=movie_titles))
 
@@ -31,12 +42,23 @@ def make_profit_scatter_plot(cur, conn):
     x_axis = []
     y_axis = []
     movie_titles = []
-    # print(x_axis)
+
+    fout = open("NYT_movies_mentioned_and_profits.csv", "w")
+    line = "Count of Articles Mentioned, Gross Profit ($ in millions), Movie Title\n"
+    fout.write(line)
+    row = ""
+
     for item in cur.fetchall():
         x_axis.append(item[0])
+        row = row + str(item[0]) + ','
         y_axis.append(item[1])
+        row = row + '$' + str(item[1]) + ' M,'
         movie_titles.append(item[2])
-
+        row = row + str(item[2])
+        line = row + "\n"
+        fout.write(line)
+        row = ""
+    fout.close()
 
     df = pd.DataFrame(dict(Gross_Profit=y_axis, Times_Mentionned=x_axis, Movie_Title=movie_titles))
 
@@ -62,13 +84,24 @@ def make_bar_graph(cur, conn):
     bar_graph_genres = []
     bar_graph_list = []
 
+    fout = open("avg_articles_per_genre.csv", "w")
+    line = "Most Popular Genre, Average Number of NYT Articles\n"
+    fout.write(line)
+    row = ""
+
     for item in list_to_count_averages:
         total[item[0]] = total.get(item[0], 0) + item[1]
         count[item[0]] = count.get(item[0], 0) + 1
 
     for genre in total:
         bar_graph_genres.append(genre)
+        row = row + str(genre) + ','
         bar_graph_list.append(total[genre] / count[genre])
+        row = row + str(total[genre] / count[genre])
+        line = row + "\n"
+        fout.write(line)
+        row = ""
+    fout.close()
 
     fig = go.FigureWidget(data=go.Bar(x=bar_graph_genres, y=bar_graph_list))
 
