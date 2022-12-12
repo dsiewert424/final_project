@@ -20,10 +20,45 @@ import sys
 # Your email: debchung@umich.edu
 # List who you have worked with on this project: Dylan Siewert
     
+def set_genre(id, cur, conn):
+    genre = ""
+    if id == 1:
+        genre = "Drama"
+        cur.execute("INSERT OR IGNORE INTO Genres (genre_id, genre) VALUES (?,?)",(id, genre))
+        conn.commit()
+    elif id == 2:
+        genre = "Action"
+        cur.execute("INSERT OR IGNORE INTO Genres (genre_id, genre) VALUES (?,?)",(id, genre))
+        conn.commit()
+    elif id == 3:
+        genre = "Mystery"
+        cur.execute("INSERT OR IGNORE INTO Genres (genre_id, genre) VALUES (?,?)",(id, genre))
+        conn.commit()
+    elif id == 4:
+        genre = "Comedy"
+        cur.execute("INSERT OR IGNORE INTO Genres (genre_id, genre) VALUES (?,?)",(id, genre))
+        conn.commit()
+    elif id == 5:
+        genre = "Biography"
+        cur.execute("INSERT OR IGNORE INTO Genres (genre_id, genre) VALUES (?,?)",(id, genre))
+        conn.commit()
+    elif id == 6:
+        genre = "Adventure"
+        cur.execute("INSERT OR IGNORE INTO Genres (genre_id, genre) VALUES (?,?)",(id, genre))
+        conn.commit()
+    elif id == 7:
+        genre = "Horror"
+        cur.execute("INSERT OR IGNORE INTO Genres (genre_id, genre) VALUES (?,?)",(id, genre))
+        conn.commit()
+    elif id == 8:
+        genre = "Crime"
+        cur.execute("INSERT OR IGNORE INTO Genres (genre_id, genre) VALUES (?,?)",(id, genre))
+        conn.commit()
+    elif id == 9:
+        genre = "Animation"
+        cur.execute("INSERT OR IGNORE INTO Genres (genre_id, genre) VALUES (?,?)",(id, genre))
+        conn.commit()
 
-# Task 2: Look at the Get the URL that links to webpage of universities with Olympic medal wins
-# search for the url in the University of Michgian wikipedia page (in the third pargraph of the intro)
-# HINT: You will have to add https://en.wikipedia.org to the URL retrieved using BeautifulSoup
 def get_data_from_url(soup, cur, conn):
     data_url = []
     
@@ -40,6 +75,28 @@ def get_data_from_url(soup, cur, conn):
         genre_str = item.find('span', class_='genre').text.strip()
         genre_list = genre_str.split(",")
         genre = genre_list[0]
+        
+        if genre == "Drama":
+            genre_id = 1
+        elif genre == "Action":
+            genre_id = 2
+        elif genre == "Mystery":
+            genre_id = 3
+        elif genre == "Comedy":
+            genre_id = 4
+        elif genre == "Biography":
+            genre_id = 5
+        elif genre == "Adventure":
+            genre_id = 6
+        elif genre == "Horror":
+            genre_id = 7
+        elif genre == "Crime":
+            genre_id = 8
+        elif genre == "Animation":
+            genre_id = 9
+
+        set_genre(genre_id, cur, conn)
+
         #rating
         rating = float(item.find('div', class_='inline-block ratings-imdb-rating').text.strip())
         #profit
@@ -49,21 +106,18 @@ def get_data_from_url(soup, cur, conn):
             profit = gross_list[0]
         elif len(gross_list) == 0:
             profit = "None"
-        
-        cur.execute("INSERT OR IGNORE INTO ImdbStats (title, genre, rating, profit) VALUES (?,?,?,?)",(title, genre, rating, profit))
-        conn.commit()
-        
-        if count % 25 == 0:
-            time.sleep(5)
-        count += 1
 
+        cur.execute("INSERT OR IGNORE INTO ImdbStats (title, genre_id, rating, profit) VALUES (?,?,?,?)",(title, genre_id, rating, profit))
+        conn.commit()
+            
 
 def main():
 
     # Create table
     conn = sqlite3.connect('movies.sqlite')
     cur = conn.cursor()
-    cur.execute('CREATE TABLE IF NOT EXISTS ImdbStats (title TEXT PRIMARY KEY, genre TEXT, rating REAL, profit REAL)')
+    cur.execute('CREATE TABLE IF NOT EXISTS ImdbStats (title TEXT PRIMARY KEY, genre_id INTEGER, rating REAL, profit REAL)')
+    cur.execute('CREATE TABLE IF NOT EXISTS Genres (genre_id INTEGER PRIMARY KEY, genre TEXT)')
 
     # Task 1: Create a BeautifulSoup object and name it soup. Refer to discussion slides or lecture slides to complete this
     for num in [1, 51]:

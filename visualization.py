@@ -6,6 +6,10 @@ import unittest
 import pandas as pd
 import numpy as np 
 
+def get_genre_name(genre_id, cur, conn):
+    cur.execute('SELECT genre FROM Genres WHERE genre_id = (?)', (genre_id, ))
+    return cur.fetchall()[0]
+
 def make_rating_scatter_plot(cur, conn):
     cur.execute('SELECT TimesMentionned.times_mentionned, ImdbStats.rating, ImdbStats.title FROM ImdbStats JOIN TimesMentionned ON ImdbStats.title = TimesMentionned.movie_title')
     x_axis = []
@@ -77,7 +81,8 @@ def make_profit_scatter_plot(cur, conn):
 
 def make_avg_times_mentionned_bar_graph(cur, conn):
 
-    cur.execute('SELECT ImdbStats.genre, TimesMentionned.times_mentionned FROM ImdbStats JOIN TimesMentionned ON ImdbStats.title = TimesMentionned.movie_title')
+    cur.execute('SELECT ImdbStats.genre_id, TimesMentionned.times_mentionned FROM ImdbStats JOIN TimesMentionned ON ImdbStats.title = TimesMentionned.movie_title')
+
     list_to_count_averages = cur.fetchall()
     total = {}
     count = {}
@@ -90,8 +95,9 @@ def make_avg_times_mentionned_bar_graph(cur, conn):
     row = ""
 
     for item in list_to_count_averages:
-        total[item[0]] = total.get(item[0], 0) + item[1]
-        count[item[0]] = count.get(item[0], 0) + 1
+        genre_name = get_genre_name(item[0], cur, conn)
+        total[genre_name] = total.get(genre_name, 0) + item[1]
+        count[genre_name] = count.get(genre_name, 0) + 1
 
     for genre in total:
         bar_graph_genres.append(genre)
@@ -117,8 +123,9 @@ def make_avg_times_mentionned_bar_graph(cur, conn):
 
 def make_avg_gross_profit_bar_graph(cur, conn):
 
+    cur.execute('SELECT ImdbStats.genre_id, ImdbStats.profit FROM ImdbStats')
 
-    cur.execute('SELECT ImdbStats.genre, ImdbStats.profit FROM ImdbStats')
+
     list_to_count_averages = cur.fetchall()
     total = {}
     count = {}
@@ -131,9 +138,10 @@ def make_avg_gross_profit_bar_graph(cur, conn):
     row = ""
 
     for item in list_to_count_averages:
+        genre_name = get_genre_name(item[0], cur, conn)
         if (item[1] != 'None'):
-            total[item[0]] = total.get(item[0], 0) + float(item[1])
-            count[item[0]] = count.get(item[0], 0) + 1
+            total[genre_name] = total.get(genre_name, 0) + float(item[1])
+            count[genre_name] = count.get(genre_name, 0) + 1
         
     for genre in total:
         bar_graph_genres.append(genre)
@@ -165,7 +173,7 @@ def main():
     cur = conn.cursor()
 
     #get list of genres
-    cur.execute('SELECT genre FROM ImdbStats')
+    cur.execute('SELECT genre FROM Genres')
     list_of_genres = [*set(cur.fetchall())]
     genres = []
     for item in list_of_genres:
