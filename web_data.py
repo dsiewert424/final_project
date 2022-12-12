@@ -35,6 +35,7 @@ def get_data_from_url(soup, cur, conn):
         #title
         title_chunk = caption.find('h3')
         title = title_chunk.find('a').text.replace("\n", "")
+        correct_title = re.sub(r'[^a-zA-Z0-9\s]+', '', title).title()
         #genre
         genre_str = item.find('span', class_='genre').text.strip()
         genre_list = genre_str.split(",")
@@ -50,7 +51,7 @@ def get_data_from_url(soup, cur, conn):
         elif len(gross_list) == 0:
             profit = "None"
 
-        cur.execute("INSERT OR IGNORE INTO ImdbStats (title, genre, rating, profit) VALUES (?,?,?,?)",(title, genre, rating, profit))
+        cur.execute("INSERT OR IGNORE INTO ImdbStats (title, genre, rating, profit) VALUES (?,?,?,?)",(correct_title, genre, rating, profit))
 
 
 def main():
