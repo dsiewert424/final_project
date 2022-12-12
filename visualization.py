@@ -120,9 +120,13 @@ def make_scatter_plot(cur, conn):
     # print(len(y_axis))
     # plot = px.scatter(x_axis, y_axis)
 
-    df = pd.DataFrame(dict(rating=y_axis, times=x_axis))
+    df = pd.DataFrame(dict(Rating=y_axis, Times_Mentionned=x_axis))
 
-    plot = px.scatter(df, x="times", y = "rating")
+    plot = px.scatter(df, x="Times_Mentionned", y = "Rating", marginal_x="histogram")
+
+    plot.title("Average Number of New York Times Articles that Mentionned 2010 Movies vs. IMDB Ratings")
+    plot.ylabel("IMDB Rating (out of 10 stars)")
+    plot.xlabel("Average Number of New York Times Articles that Mentionned Movie")
 
     # np.random.seed(42) 
     
@@ -197,7 +201,7 @@ def make_bar_graph(cur, conn):
     fig = go.FigureWidget(data=go.Bar(x=bar_graph_genres, y=bar_graph_list))
 
     # fig.layout.title = "Average Number of Times 2010 Movies of Most Popular Genres were Mentionned in New York Times Articles"
-    fig.update_layout(title = "Average Number of Times 2010 Movies of Most Popular Genres were Mentionned in New York Times Articles", xaxis_title='Movie Genre', yaxis_title='Average Number of Times Mentionned in New York Times Articles')
+    fig.update_layout(title = "Average Number of New York Times Articles that Mentionned 2010 Movies of Most Popular Genres", xaxis_title='Movie Genre', yaxis_title='Average Number of Times Mentionned in New York Times Articles')
 
     fig.show()
         
