@@ -102,11 +102,15 @@ import numpy as np
 
 def make_scatter_plot(cur, conn):
     cur.execute('SELECT TimesMentionned.times_mentionned FROM ImdbStats JOIN TimesMentionned ON ImdbStats.title = TimesMentionned.movie_title')
-    x_axis = list(cur.fetchall())
+    x_axis = []
+    for item in cur.fetchall():
+        x_axis.append(item[0])
     # print(x_axis)
 
     cur.execute('SELECT ImdbStats.rating FROM ImdbStats JOIN TimesMentionned ON ImdbStats.title = TimesMentionned.movie_title')
-    y_axis = list(cur.fetchall())
+    y_axis = []
+    for item in cur.fetchall():
+        y_axis.append(item[0])
     # print(y_axis)
     # sql_query = pd.read_sql_query ('SELECT ImdbStats.rating, TimesMentionned.times_mentionned FROM ImdbStats JOIN TimesMentionned ON ImdbStats.title = TimesMentionned.movie_title', conn)
 
@@ -118,7 +122,7 @@ def make_scatter_plot(cur, conn):
 
     df = pd.DataFrame(dict(rating=y_axis, times=x_axis))
 
-    plot = px.scatter(df, x="times", y = "rating", width=800, height=400)
+    plot = px.scatter(df, x="times", y = "rating")
 
     # np.random.seed(42) 
     
@@ -129,17 +133,24 @@ def make_scatter_plot(cur, conn):
     # plot.show()
         
     # "Times Mentionned in NYT articles", y = "IMDB Rating")
-    # plot.show()
+    plot.show()
 
 def make_scatter_plot_2(cur, conn):
     cur.execute('SELECT TimesMentionned.times_mentionned FROM ImdbStats JOIN TimesMentionned ON ImdbStats.title = TimesMentionned.movie_title')
-    x_axis = list(cur.fetchall())
+    x_axis = []
     # print(x_axis)
-    print(len(x_axis))
+    for item in cur.fetchall():
+        x_axis.append(item[0])
+
+
+    print(x_axis)
 
     cur.execute('SELECT ImdbStats.profit FROM ImdbStats JOIN TimesMentionned ON ImdbStats.title = TimesMentionned.movie_title')
-    y_axis = list(cur.fetchall())
-    # print(y_axis)
+    y_axis = []
+    for item in cur.fetchall():
+        y_axis.append(item[0])
+    
+    print(y_axis)
     # sql_query = pd.read_sql_query ('SELECT ImdbStats.rating, TimesMentionned.times_mentionned FROM ImdbStats JOIN TimesMentionned ON ImdbStats.title = TimesMentionned.movie_title', conn)
 
     # df = pd.DataFrame(sql_query, columns = ['Times Mentionned in NYT articles', 'IMDB Rating'])
@@ -210,7 +221,7 @@ def main():
 
     make_scatter_plot(cur, conn)
     make_scatter_plot_2(cur, conn)
-    make_bar_graph(cur, conn)
+    # make_bar_graph(cur, conn)
 
 if __name__ == '__main__':
     main()
