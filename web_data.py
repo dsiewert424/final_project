@@ -59,13 +59,24 @@ def set_genre(id, cur, conn):
         cur.execute("INSERT OR IGNORE INTO Genres (genre_id, genre) VALUES (?,?)",(id, genre))
         conn.commit()
 
+def prompt_user():
+    i = input("Would you like to insert 25 rows into movies.sqlite (Y/N)?")
+    if (i == 'Y' or i == 'y'):
+        return
+    elif(i == 'N' or i == 'n'):
+        print("Quitting program... ")
+        exit()
+    else:
+        print("Unrecognized selection")
+
 def get_data_from_url(soup, cur, conn):
     data_url = []
     
     #find container of movies
     movie_list = soup.find_all('div', class_='lister-item mode-advanced')
 
-    count = 1
+    count = 0
+    
     for item in movie_list:
         caption = item.find('div', class_='lister-item-content')
         #title
@@ -109,6 +120,9 @@ def get_data_from_url(soup, cur, conn):
 
         cur.execute("INSERT OR IGNORE INTO ImdbStats (title, genre_id, rating, profit) VALUES (?,?,?,?)",(title, genre_id, rating, profit))
         conn.commit()
+        count += 1
+        if (count % 25 == 0):
+            prompt_user()
             
 
 def main():
