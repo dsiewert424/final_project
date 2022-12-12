@@ -30,6 +30,7 @@ def get_data_from_url(soup, cur, conn):
     #find container of movies
     movie_list = soup.find_all('div', class_='lister-item mode-advanced')
 
+    count = 1
     for item in movie_list:
         caption = item.find('div', class_='lister-item-content')
         #title
@@ -48,8 +49,13 @@ def get_data_from_url(soup, cur, conn):
             profit = gross_list[0]
         elif len(gross_list) == 0:
             profit = "None"
-
+        
         cur.execute("INSERT OR IGNORE INTO ImdbStats (title, genre, rating, profit) VALUES (?,?,?,?)",(title, genre, rating, profit))
+        conn.commit()
+        
+        if count % 25 == 0:
+            time.sleep(5)
+        count += 1
 
 
 def main():
@@ -66,8 +72,6 @@ def main():
         soup = BeautifulSoup(r.text, 'html.parser')
         get_data_from_url(soup, cur, conn)
     
-    conn.commit()
-
 if __name__ == "__main__":
     main()
     unittest.main(verbosity = 2)
