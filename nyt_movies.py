@@ -31,7 +31,7 @@ def get_2010_month_data(month_index, month_name, times_mentionned):
 
             for title in list_of_titles:
                 # strip commas and periods from title
-                correct_title = re.sub(r'[^a-zA-Z0-9\s]+', '', title)
+                correct_title = re.sub(r'[^a-zA-Z0-9\s]+', '', title).title().replace("  ", " ")
                 times_mentionned[correct_title] = times_mentionned.get(correct_title, 0) + 1
 
     return times_mentionned
