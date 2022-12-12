@@ -107,6 +107,8 @@ def make_avg_times_mentionned_bar_graph(cur, conn):
     fout.close()
 
     fig = go.FigureWidget(data=go.Bar(x=bar_graph_genres, y=bar_graph_list))
+    fig.data[0].marker.color= ('rgb(165, 131, 0)', 'rgb(225, 94, 53)', 'rgb(38, 70, 83)', 'rgb(197, 115, 0)', 'rgb(0, 152, 137)', 'rgb(101, 149, 0)', 'rgb(154, 3, 30)', 'rgb(152, 82, 119)', 'rgb(95, 15, 64)')
+
 
     # fig.layout.title = "Average Number of Times 2010 Movies of Most Popular Genres were Mentionned in New York Times Articles"
     fig.update_layout(title = "Average Number of New York Times Articles that Mentionned 2010 Movies of Most Popular Genres", xaxis_title='Movie Genre', yaxis_title='Average Number of Times Mentionned in New York Times Articles')
@@ -147,6 +149,7 @@ def make_avg_gross_profit_bar_graph(cur, conn):
     fout.close()
 
     fig = go.FigureWidget(data=go.Bar(x=bar_graph_genres, y=bar_graph_list))
+    fig.data[0].marker.color= ('rgb(165, 131, 0)', 'rgb(225, 94, 53)', 'rgb(38, 70, 83)', 'rgb(197, 115, 0)', 'rgb(0, 152, 137)', 'rgb(101, 149, 0)', 'rgb(154, 3, 30)', 'rgb(152, 82, 119)', 'rgb(95, 15, 64)')
 
     # fig.layout.title = "Average Number of Times 2010 Movies of Most Popular Genres were Mentionned in New York Times Articles"
     fig.update_layout(title = "Average Gross Profit of 2010 Movies by Genre", xaxis_title='Movie Genre', yaxis_title='Gross Profit (USD in Millions)')
