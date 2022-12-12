@@ -35,23 +35,21 @@ def get_data_from_url(soup, cur, conn):
         #title
         title_chunk = caption.find('h3')
         title = title_chunk.find('a').text.replace("\n", "")
-        correct_title = re.sub(r'[^a-zA-Z0-9\s]+', '', title).title().replace("  ", " ")
         #genre
         genre_str = item.find('span', class_='genre').text.strip()
         genre_list = genre_str.split(",")
         genre = genre_list[0]
-        # print(genre)
         #rating
         rating = float(item.find('div', class_='inline-block ratings-imdb-rating').text.strip())
         #profit
         gross = item.find('p', class_='sort-num_votes-visible').text
-        gross_list = re.findall( r"\$\d+\.\d+M", gross)
+        gross_list = re.findall( r"\$(\d+\.\d+)M", gross)
         if len(gross_list) == 1:
             profit = gross_list[0]
         elif len(gross_list) == 0:
             profit = "None"
 
-        cur.execute("INSERT OR IGNORE INTO ImdbStats (title, genre, rating, profit) VALUES (?,?,?,?)",(correct_title, genre, rating, profit))
+        cur.execute("INSERT OR IGNORE INTO ImdbStats (title, genre, rating, profit) VALUES (?,?,?,?)",(title, genre, rating, profit))
 
 
 def main():
@@ -59,7 +57,7 @@ def main():
     # Create table
     conn = sqlite3.connect('movies.sqlite')
     cur = conn.cursor()
-    cur.execute('CREATE TABLE IF NOT EXISTS ImdbStats (title TEXT PRIMARY KEY, genre TEXT, rating REAL, profit TEXT)')
+    cur.execute('CREATE TABLE IF NOT EXISTS ImdbStats (title TEXT PRIMARY KEY, genre TEXT, rating REAL, profit REAL)')
 
     # Task 1: Create a BeautifulSoup object and name it soup. Refer to discussion slides or lecture slides to complete this
     for num in [1, 51]:
@@ -69,15 +67,6 @@ def main():
         get_data_from_url(soup, cur, conn)
     
     conn.commit()
-
-
-#class TestAllMethods(unittest.TestCase):
-    # def setUp(self):
-    #     self.soup = BeautifulSoup(requests.get('https://en.wikipedia.org/wiki/University_of_Michigan').text, 'html.parser')
-
-    # def test_link_nobel_laureates(self):
-    #     self.assertEqual(getLink(self.soup), 'https://en.wikipedia.org/wiki/List_of_American_universities_with_Olympic_medals')
-
 
 if __name__ == "__main__":
     main()
