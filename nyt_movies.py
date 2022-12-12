@@ -13,14 +13,8 @@ def get_2010_month_data(month_index, times_mentionned):
     request_url = f'https://api.nytimes.com/svc/archive/v1/2010/{month_index}.json?api-key={api_key}'
     response = requests.get(request_url)
     dic_data = response.json()
-    # try:
-
-
-    # except:
 
     # write_json(f'{month_name}.json', dic_data)
-
-    
     for item in dic_data['response']['docs']:
         if (item['section_name'] == 'Movies'):
             
@@ -34,7 +28,21 @@ def get_2010_month_data(month_index, times_mentionned):
                 correct_title = re.sub(r'[^a-zA-Z0-9\s]+', '', title).title().replace("  ", " ")
                 times_mentionned[correct_title] = times_mentionned.get(correct_title, 0) + 1
 
-    return times_mentionned
+
+def insert_data(start_index, times_mentionned, cur, conn):
+    finished = False
+    if (start_index == 750):
+        end_index = start_index + 26
+        finished = True
+    else:
+        end_index = start_index + 25
+
+    
+    for item in range(start_index, end_index):
+        cur.execute('INSERT OR IGNORE INTO TimesMentionned (movie_title, times_mentionned) VALUES (?,?)', (times_mentionned[item][0], times_mentionned[item][1]))
+    conn.commit()
+    return finished
+
 
 
 def main():
@@ -102,16 +110,29 @@ def main():
     print("________________________")
 
 
-    print("Inserting data into music.sqlite...")
+    print("Inserting data into movies.sqlite...")
 
-    count = 0
+    # convert times_mentionned to list of tuples
+    new_database = []
+
     for item in times_mentionned:
-        cur.execute('INSERT OR IGNORE INTO TimesMentionned (movie_title, times_mentionned) VALUES (?,?)', (item, times_mentionned[item]))
-        conn.commit()
-        count += 1
-        # Pause for a bit for every 20 additions to database...
-        if (count % 20 == 0):
-            time.sleep(5)
+        new_database.append((item, times_mentionned[item]))
+
+
+    finished = False
+    start_index = 0
+
+    while(not finished):
+        i = input("Would you like to insert 25 rows into movies.sqlite (Y/N)?")
+        if (i == 'Y' or i == 'y'):
+            finished = insert_data(start_index, new_database, cur, conn)
+            start_index += 25
+        elif(i == 'N' or i == 'n'):
+            print("Quitting program... ")
+            exit()
+        else:
+            print("Unrecognized selection")
+
 
     print("Finished getting NYT data.")
 
