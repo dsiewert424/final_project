@@ -4,11 +4,11 @@ import os
 import sqlite3
 import unittest
 import pandas as pd
-import numpy as np 
+import numpy as np
 
 def get_genre_name(genre_id, cur, conn):
     cur.execute('SELECT genre FROM Genres WHERE genre_id = (?)', (genre_id, ))
-    return cur.fetchall()[0]
+    return cur.fetchall()[0][0]
 
 def make_rating_scatter_plot(cur, conn):
     cur.execute('SELECT TimesMentionned.times_mentionned, ImdbStats.rating, ImdbStats.title FROM ImdbStats JOIN TimesMentionned ON ImdbStats.title = TimesMentionned.movie_title')
@@ -82,7 +82,6 @@ def make_profit_scatter_plot(cur, conn):
 def make_avg_times_mentionned_bar_graph(cur, conn):
 
     cur.execute('SELECT ImdbStats.genre_id, TimesMentionned.times_mentionned FROM ImdbStats JOIN TimesMentionned ON ImdbStats.title = TimesMentionned.movie_title')
-
     list_to_count_averages = cur.fetchall()
     total = {}
     count = {}
@@ -95,9 +94,9 @@ def make_avg_times_mentionned_bar_graph(cur, conn):
     row = ""
 
     for item in list_to_count_averages:
-        genre_name = get_genre_name(item[0], cur, conn)
-        total[genre_name] = total.get(genre_name, 0) + item[1]
-        count[genre_name] = count.get(genre_name, 0) + 1
+        genre = get_genre_name(item[0], cur, conn)
+        total[genre] = total.get(genre, 0) + item[1]
+        count[genre] = count.get(genre, 0) + 1
 
     for genre in total:
         bar_graph_genres.append(genre)
@@ -123,9 +122,8 @@ def make_avg_times_mentionned_bar_graph(cur, conn):
 
 def make_avg_gross_profit_bar_graph(cur, conn):
 
+
     cur.execute('SELECT ImdbStats.genre_id, ImdbStats.profit FROM ImdbStats')
-
-
     list_to_count_averages = cur.fetchall()
     total = {}
     count = {}
@@ -138,10 +136,10 @@ def make_avg_gross_profit_bar_graph(cur, conn):
     row = ""
 
     for item in list_to_count_averages:
-        genre_name = get_genre_name(item[0], cur, conn)
+        genre = get_genre_name(item[0], cur, conn)
         if (item[1] != 'None'):
-            total[genre_name] = total.get(genre_name, 0) + float(item[1])
-            count[genre_name] = count.get(genre_name, 0) + 1
+            total[genre] = total.get(genre, 0) + float(item[1])
+            count[genre] = count.get(genre, 0) + 1
         
     for genre in total:
         bar_graph_genres.append(genre)
@@ -171,13 +169,6 @@ def main():
 
     conn = sqlite3.connect('movies.sqlite')
     cur = conn.cursor()
-
-    #get list of genres
-    cur.execute('SELECT genre FROM Genres')
-    list_of_genres = [*set(cur.fetchall())]
-    genres = []
-    for item in list_of_genres:
-        genres.append(item[0])
 
 
     make_rating_scatter_plot(cur, conn)
